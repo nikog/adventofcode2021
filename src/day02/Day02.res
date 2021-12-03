@@ -1,6 +1,6 @@
-open Belt
-
 module Part01 = {
+  open Belt
+
   let parseCommands = string => {
     let matches = string->Js.String2.match_(%re("/(.*)\s(\d*)/"))
 
@@ -33,24 +33,21 @@ module Part01 = {
 
 module Part02 = {
   let parseCommands = ((x, y, aim), string) => {
-    let matches = string->Js.String2.match_(%re("/(.*)\s(\d*)/"))
-
-    let value = switch matches {
-    | Some([_, _, value]) => value->Int.fromString
+    let matches = switch string->Js.String2.split(" ") {
+    | [command, value] => Some(command, value->Belt.Int.fromString)
     | _ => None
     }
 
-    switch (matches, value) {
-    | (Some([_, "forward", _]), Some(value)) => (x + value, y + value * aim, aim)
-    | (Some([_, "up", _]), Some(value)) => (x, y, aim - value)
-    | (Some([_, "down", _]), Some(value)) => (x, y, aim + value)
+    switch matches {
+    | Some("forward", Some(value)) => (x + value, y + value * aim, aim)
+    | Some("up", Some(value)) => (x, y, aim - value)
+    | Some("down", Some(value)) => (x, y, aim + value)
     | _ => (0, 0, 0)
     }
   }
 
   let make = input => {
-    let (x, y, _) = input->Js.String2.split("\n")->Array.reduce((0, 0, 0), parseCommands)
-
+    let (x, y, _) = input->Js.String2.split("\n")->Js.Array2.reduce(parseCommands, (0, 0, 0))
     x * y
   }
 }

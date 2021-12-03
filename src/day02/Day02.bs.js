@@ -89,30 +89,33 @@ function parseCommands$1(param, string) {
   var aim = param[2];
   var y = param[1];
   var x = param[0];
-  var matches = string.match(/(.*)\s(\d*)/);
-  var value = matches !== null && matches.length === 3 ? Belt_Int.fromString(matches[2]) : undefined;
-  if (matches === null) {
+  var match = string.split(" ");
+  var matches;
+  if (match.length !== 2) {
+    matches = undefined;
+  } else {
+    var command = match[0];
+    var value = match[1];
+    matches = [
+      command,
+      Belt_Int.fromString(value)
+    ];
+  }
+  if (matches === undefined) {
     return [
             0,
             0,
             0
           ];
   }
-  if (matches.length !== 3) {
-    return [
-            0,
-            0,
-            0
-          ];
-  }
-  var match = matches[1];
-  switch (match) {
+  switch (matches[0]) {
     case "down" :
-        if (value !== undefined) {
+        var value$1 = matches[1];
+        if (value$1 !== undefined) {
           return [
                   x,
                   y,
-                  aim + value | 0
+                  aim + value$1 | 0
                 ];
         } else {
           return [
@@ -122,10 +125,11 @@ function parseCommands$1(param, string) {
                 ];
         }
     case "forward" :
-        if (value !== undefined) {
+        var value$2 = matches[1];
+        if (value$2 !== undefined) {
           return [
-                  x + value | 0,
-                  y + Math.imul(value, aim) | 0,
+                  x + value$2 | 0,
+                  y + Math.imul(value$2, aim) | 0,
                   aim
                 ];
         } else {
@@ -136,11 +140,12 @@ function parseCommands$1(param, string) {
                 ];
         }
     case "up" :
-        if (value !== undefined) {
+        var value$3 = matches[1];
+        if (value$3 !== undefined) {
           return [
                   x,
                   y,
-                  aim - value | 0
+                  aim - value$3 | 0
                 ];
         } else {
           return [
@@ -159,11 +164,11 @@ function parseCommands$1(param, string) {
 }
 
 function make$1(input) {
-  var match = Belt_Array.reduce(input.split("\n"), [
+  var match = input.split("\n").reduce(parseCommands$1, [
         0,
         0,
         0
-      ], parseCommands$1);
+      ]);
   return Math.imul(match[0], match[1]);
 }
 
